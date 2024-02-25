@@ -20,10 +20,11 @@ class MonteCarloAgent(BaseAgent):
         # TO DO: Add own code
         T_ep = len(actions)
         G_t = 0
-        for t in range(T_ep):
+        for t in reversed(range(T_ep)):
             G_t = sum([self.gamma ** i * rewards[t+i] for i in range(T_ep - t)])
             error = G_t - self.Q_sa[states[t], actions[t]]
             self.Q_sa[states[t], actions[t]] += self.learning_rate * error
+
 
 def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma, 
                    policy='egreedy', epsilon=None, temp=None, plot=True, eval_interval=500):
@@ -37,8 +38,9 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
     eval_returns = []
 
     # TO DO: Write your Monte Carlo RL algorithm here!
-    s = env.reset()
+    
     for t in range(n_timesteps):
+        s = env.reset()
         states = [s]
         actions = []
         rewards = []
@@ -51,7 +53,7 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
             actions.append(a)
             rewards.append(r)
             if done:
-                print('Episode finished after {} timesteps'.format(e+1))
+                # print('Episode finished after {} timesteps'.format(e+1))
                 break
             s = s_next
         # Update Q-values
@@ -63,8 +65,8 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
             eval_returns.append(mean_return)
             eval_timesteps.append(t)
 
-    # if plot:
-    #    env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1) # Plot the Q-value estimates during Monte Carlo RL execution
+    if plot:
+       env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=5) # Plot the Q-value estimates during Monte Carlo RL execution
 
                  
     return np.array(eval_returns), np.array(eval_timesteps) 
