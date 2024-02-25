@@ -9,14 +9,17 @@ By Thomas Moerland
 import numpy as np
 from Environment import StochasticWindyGridworld
 from Agent import BaseAgent
-np.random.seed(42)
 
 class QLearningAgent(BaseAgent):
         
     def update(self,s,a,r,s_next,done):
         # TO DO: Add own code
         # Compute back-up estimate/target G_t
-        G_t = r + self.gamma * np.max(self.Q_sa[s_next,])
+        if (done):
+            G_t = r
+        else:
+            G_t = r + self.gamma * np.max(self.Q_sa[s_next,])
+
         error = G_t - self.Q_sa[s,a]
         # Q-learning update
         self.Q_sa[s,a] += self.learning_rate * error
@@ -39,7 +42,7 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
         # Simulate environment
         s_next, r, done = env.step(a)
         # Q update
-        # env.render(Q_sa=agent.Q_sa,plot_optimal_policy=True,step_pause=1)
+        # env.render(Q_sa=agent.Q_sa,plot_optimal_policy=True,step_pause=0.1)
         agent.update(s,a,r,s_next,done)
 
         # Evaluate after every eval_interval timesteps
@@ -61,7 +64,6 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
     return np.array(eval_returns), np.array(eval_timesteps)   
 
 def test():
-    # n_time steps set to 2000 and it will find
     n_timesteps = 1000
     eval_interval=100
     gamma = 1.0

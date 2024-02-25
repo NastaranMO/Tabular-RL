@@ -18,7 +18,16 @@ class NstepQLearningAgent(BaseAgent):
         rewards is a list of rewards observed in the episode, of length T_ep
         done indicates whether the final s in states is was a terminal state '''
         # TO DO: Add own code
-        pass
+        T_ep = len(actions)
+        G_t = 0
+        for t in range(T_ep):
+            m = min(n, T_ep - t)
+            if states[t+m] == done:
+                G_t = sum([self.gamma ** i * rewards[t+i] for i in range(m)])
+            else:
+                G_t = sum([self.gamma ** i * rewards[t+i] for i in range(m)]) + self.gamma ** m * np.max(self.Q_sa[states[t+m],])
+            error = G_t - self.Q_sa[states[t], actions[t]]
+            self.Q_sa[states[t], actions[t]] += self.learning_rate * error
 
 def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma, 
                    policy='egreedy', epsilon=None, temp=None, plot=True, n=5, eval_interval=500):
@@ -31,8 +40,31 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
     eval_timesteps = []
     eval_returns = []
 
+    s = env.reset()
     # TO DO: Write your n-step Q-learning algorithm here!
-    
+    # Collect episode
+    for t in range(n_timesteps):
+        states = [s]
+        actions = []
+        rewards = []
+        done = False
+        for e in range(max_episode_length):
+            a = pi.select_action(s, policy, epsilon, temp)
+            s_next, r, done = env.step(a)
+            states.append(s_next)
+            actions.append(a)
+            rewards.append(r)
+            if done:
+                break
+            s = s_next
+        # Update Q-values
+        # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
+        pi.update(states, actions, rewards, done, n)
+        
+        if t % eval_interval == 0:
+            mean_return = pi.evaluate(eval_env)
+            eval_returns.append(mean_return)
+            eval_timesteps.append(t)
     # if plot:
     #    env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1) # Plot the Q-value estimates during n-step Q-learning execution
         

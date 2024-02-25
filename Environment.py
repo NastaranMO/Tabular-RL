@@ -10,7 +10,7 @@ matplotlib.use('Qt5Agg') # 'TkAgg'
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle,Circle,Arrow
-np.random.seed(42)
+# np.random.seed(42)
 
 # define the environment
 class StochasticWindyGridworld:
