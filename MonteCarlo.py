@@ -19,17 +19,10 @@ class MonteCarloAgent(BaseAgent):
         done indicates whether the final s in states is was a terminal state '''
         # TO DO: Add own code
         T_ep = len(actions)
-        G = 100
-        for t in reversed(range(T_ep - 1)):
-            # if t == T_ep - 1:
-            #     # G = 100
-            #     g = 0
-
-                # print("s terminal", states[t])
-            # else:      
+        G = 0
+        for t in reversed(range(T_ep)):
             G = self.gamma * G + rewards[t]
             self.Q_sa[states[t], actions[t]] += self.learning_rate * (G - self.Q_sa[states[t], actions[t]])
-
 
 def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma, 
                    policy='egreedy', epsilon=None, temp=None, plot=True, eval_interval=500):
@@ -59,12 +52,10 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
             rewards.append(r)
             
             if done:
-                # print(f"s = {s}, a = {a}, s_next = {s_next}, r = {r}, done = {done}")
                 # print('Episode finished after {} timesteps'.format(e+1))
                 break
             s = s_next
         # Update Q-values
-        
         pi.update(states, actions, rewards, done)
         # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
 
@@ -80,7 +71,7 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
     return np.array(eval_returns), np.array(eval_timesteps) 
     
 def test():
-    n_timesteps = 10000
+    n_timesteps = 1000
     max_episode_length = 100
     gamma = 1.0
     learning_rate = 0.1

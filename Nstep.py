@@ -42,7 +42,7 @@ class NstepQLearningAgent(BaseAgent):
                 G_t = 0
                 m = min(n, T_ep - t)
                 # print("tp",T_ep - t)
-                if done or t + n >= T_ep:
+                if done and t + n >= T_ep:
                     for i in range(T_ep - t):
                         G_t += self.gamma ** i * rewards[t+i]
                 else:
@@ -79,12 +79,11 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
             states.append(s)
             actions.append(a)
             rewards.append(r)
-            # pi.update(states, actions, rewards, done, n)
+      
             if done:
-                # print("done")
                 break
             s = s_next
-            # print("episode: ", e)
+
         # Update Q-values
         pi.update(states, actions, rewards, done, n)
         # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)

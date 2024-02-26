@@ -37,6 +37,7 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
     # TO DO: Write your Q-learning algorithm here!
     s = env.reset()
     for t in range(n_timesteps):
+        
         # Sample action
         a = agent.select_action(s, policy, epsilon, temp)
         # Simulate environment
@@ -64,7 +65,7 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
     return np.array(eval_returns), np.array(eval_timesteps)   
 
 def test():
-    n_timesteps = 50000
+    n_timesteps = 10000
     eval_interval=100
     gamma = 1.0
     learning_rate = 0.1
