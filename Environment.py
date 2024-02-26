@@ -264,7 +264,7 @@ def test():
         print("State {}, Action {}, Reward {}, Next state {}, Done {}, p(s'|s,a) {}, r(s,a,s') {}".format(s,a,r,s_next,done,p_sas,r_sas))
         counter += 1 
         print("next round", counter)
-        env.render(Q_sa=Q_sa,plot_optimal_policy=False,step_pause=step_pause) # display the environment
+        # env.render(Q_sa=Q_sa,plot_optimal_policy=False,step_pause=step_pause) # display the environment
         if done: 
             s = env.reset()
         else: 

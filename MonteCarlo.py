@@ -65,8 +65,8 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
             eval_returns.append(mean_return)
             eval_timesteps.append(t)
 
-    if plot:
-       env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=5) # Plot the Q-value estimates during Monte Carlo RL execution
+    # if plot:
+    #    env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=5) # Plot the Q-value estimates during Monte Carlo RL execution
 
                  
     return np.array(eval_returns), np.array(eval_timesteps) 

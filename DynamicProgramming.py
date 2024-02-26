@@ -66,7 +66,7 @@ def experiment():
     gamma = 1.0
     threshold = 0.001
     env = StochasticWindyGridworld(initialize_model=True)
-    env.render()
+    # env.render()
     QIagent = Q_value_iteration(env,gamma,threshold)
 
     # view optimal policy
@@ -75,7 +75,7 @@ def experiment():
     while not done:
         a = QIagent.select_action(s)
         s_next, r, done = env.step(a)
-        env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=True,step_pause=0.5)
+        # env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=True,step_pause=0.5)
         s = s_next
 
     # # TO DO: Compute mean reward per timestep under the optimal policy

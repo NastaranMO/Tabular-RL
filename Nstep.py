@@ -71,8 +71,8 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
             mean_return = pi.evaluate(eval_env)
             eval_returns.append(mean_return)
             eval_timesteps.append(t)
-    if plot:
-       env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=10) # Plot the Q-value estimates during n-step Q-learning execution
+    # if plot:
+    #    env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=10) # Plot the Q-value estimates during n-step Q-learning execution
 
     return np.array(eval_returns), np.array(eval_timesteps) 
 
