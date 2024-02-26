@@ -12,23 +12,45 @@ from Agent import BaseAgent
 
 class NstepQLearningAgent(BaseAgent):
         
-    def update(self, states, actions, rewards, done, n):
-        ''' states is a list of states observed in the episode, of length T_ep + 1 (last state is appended)
-        actions is a list of actions observed in the episode, of length T_ep
-        rewards is a list of rewards observed in the episode, of length T_ep
-        done indicates whether the final s in states is was a terminal state '''
-        # TO DO: Add own code
-        T_ep = len(actions)
-        G_t = 0
-        # print("timesteps: ", T_ep)
-        for t in range(T_ep):
-            m = min(n, T_ep - t)
-            if done and m < n:
-                G_t = sum([self.gamma ** i * rewards[t+i] for i in range(m)])
-            else:
-                G_t = sum([self.gamma ** i * rewards[t+i] for i in range(m)]) + self.gamma ** m * np.max(self.Q_sa[states[t+n] if t+n < T_ep else states[-1],])
-            error = G_t - self.Q_sa[states[t], actions[t]]
-            self.Q_sa[states[t], actions[t]] += self.learning_rate * error
+    # def update(self, states, actions, rewards, done, n):
+    #     ''' states is a list of states observed in the episode, of length T_ep + 1 (last state is appended)
+    #     actions is a list of actions observed in the episode, of length T_ep
+    #     rewards is a list of rewards observed in the episode, of length T_ep
+    #     done indicates whether the final s in states is was a terminal state '''
+    #     # TO DO: Add own code
+    #     T_ep = len(actions)
+    #     G_t = 0
+    #     # print("timesteps: ", T_ep)
+    #     for t in range(T_ep):
+    #         m = min(n, T_ep - t)
+    #         if done and m < n:
+    #             G_t = sum([self.gamma ** i * rewards[t+i] for i in range(m)])
+    #         else:
+    #             G_t = sum([self.gamma ** i * rewards[t+i] for i in range(m)]) + self.gamma ** m * np.max(self.Q_sa[states[t+n] if t+n < T_ep else states[-1],])
+    #         error = G_t - self.Q_sa[states[t], actions[t]]
+    #         self.Q_sa[states[t], actions[t]] += self.learning_rate * error
+
+        def update(self, states, actions, rewards, done, n):
+            ''' states is a list of states observed in the episode, of length T_ep + 1 (last state is appended)
+            actions is a list of actions observed in the episode, of length T_ep
+            rewards is a list of rewards observed in the episode, of length T_ep
+            done indicates whether the final s in states is was a terminal state '''
+            # TO DO: Add own code
+            T_ep = len(actions)
+            # print("timesteps: ", T_ep)
+            for t in range(T_ep):
+                G_t = 0
+                m = min(n, T_ep - t)
+                print("tp",T_ep - t)
+                if done and t + n >= T_ep:
+                    for i in range(T_ep - t):
+                        G_t += self.gamma ** i * rewards[t+i]
+                else:
+                    # print("m: ", m)
+                    G_t = sum([self.gamma ** i * rewards[t+i] for i in range(m)]) + self.gamma ** (m) * np.max(self.Q_sa[states[t+m] if t+n < T_ep else states[-1],])
+                error = G_t - self.Q_sa[states[t], actions[t]]
+                self.Q_sa[states[t], actions[t]] += self.learning_rate * error
+
 
 def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma, 
                    policy='egreedy', epsilon=None, temp=None, plot=True, n=5, eval_interval=500):
