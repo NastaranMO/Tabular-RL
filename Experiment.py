@@ -14,6 +14,7 @@ from SARSA import sarsa
 from Nstep import n_step_Q
 from MonteCarlo import monte_carlo
 from Helper import LearningCurvePlot, smooth
+from datetime import datetime
 
 def average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, gamma, policy='egreedy', 
                     epsilon=None, temp=None, smoothing_window=None, plot=False, n=5, eval_interval=500):
@@ -130,7 +131,8 @@ def experiment():
                                           gamma, policy, epsilon, temp, smoothing_window, plot, n, eval_interval)
     Plot.add_curve(timesteps,learning_curve,label='Monte Carlo')        
     Plot.add_hline(optimal_episode_return, label="DP optimum")
-    Plot.save('depth50001.png')
+
+    Plot.save('depth-500001--1-22-pm.png')
 
 if __name__ == '__main__':
     experiment()

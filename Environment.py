@@ -77,6 +77,7 @@ class StochasticWindyGridworld:
         if goal_present:
             goal_index = np.where([np.all(goal_location == self.agent_location) for goal_location in self.goal_locations])[0][0]
             done = True
+            # print("goal_index", self.goal_locations[goal_index])
             r = self.goal_rewards[goal_index]
         else: 
             done = False
