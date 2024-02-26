@@ -48,7 +48,7 @@ def experiment():
     smoothing_window = 29 # Must be an odd number. Use 'None' to switch smoothing off!
     plot = False # Plotting is very slow, switch it off when we run repetitions
     
-    # MDP    
+    # MDP    50001
     n_timesteps = 50001 # Set one extra timestep to ensure evaluation at start and end
     eval_interval = 1000
     max_episode_length = 100
@@ -130,7 +130,7 @@ def experiment():
                                           gamma, policy, epsilon, temp, smoothing_window, plot, n, eval_interval)
     Plot.add_curve(timesteps,learning_curve,label='Monte Carlo')        
     Plot.add_hline(optimal_episode_return, label="DP optimum")
-    Plot.save('depth.png')
+    Plot.save('depth50001.png')
 
 if __name__ == '__main__':
     experiment()

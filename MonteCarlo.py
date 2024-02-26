@@ -18,12 +18,18 @@ class MonteCarloAgent(BaseAgent):
         rewards is a list of rewards observed in the episode, of length T_ep
         done indicates whether the final s in states is was a terminal state '''
         # TO DO: Add own code
+        # T_ep = len(actions)
+        # G = [0 for _ in range(T_ep)]
+        # for t in reversed(range(T_ep)):
+        #     # G <- r_t + gamma * G
+        #     G[t] = rewards[t] + self.gamma * (G[t+1] if t+1 < T_ep else 0)               
+        #     self.Q_sa[states[t], actions[t]] += self.learning_rate * (G[t] - self.Q_sa[states[t], actions[t]])
         T_ep = len(actions)
-        G_t = 0
+        G = 0
         for t in reversed(range(T_ep)):
-            G_t = sum([self.gamma ** i * rewards[t+i] for i in range(T_ep - t)])
-            error = G_t - self.Q_sa[states[t], actions[t]]
-            self.Q_sa[states[t], actions[t]] += self.learning_rate * error
+            # G <- r_t + gamma * G
+            G = rewards[t]+self.gamma*G           
+            self.Q_sa[states[t], actions[t]] += self.learning_rate * (G - self.Q_sa[states[t], actions[t]])
 
 
 def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma, 
@@ -52,21 +58,23 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
             states.append(s_next)
             actions.append(a)
             rewards.append(r)
+            
             if done:
                 # print('Episode finished after {} timesteps'.format(e+1))
                 break
             s = s_next
         # Update Q-values
-        # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
         pi.update(states, actions, rewards)
+        # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
+
 
         if t % eval_interval == 0:
             mean_return = pi.evaluate(eval_env)
             eval_returns.append(mean_return)
             eval_timesteps.append(t)
 
-    # if plot:
-    #    env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=5) # Plot the Q-value estimates during Monte Carlo RL execution
+    if plot:
+       env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=5) # Plot the Q-value estimates during Monte Carlo RL execution
 
                  
     return np.array(eval_returns), np.array(eval_timesteps) 
