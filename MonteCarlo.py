@@ -39,6 +39,7 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
     
     for t in range(n_timesteps):
         s = env.reset()
+        a = pi.select_action(s, policy, epsilon, temp)
         states = []
         actions = []
         rewards = []

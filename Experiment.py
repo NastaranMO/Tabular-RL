@@ -115,24 +115,24 @@ def experiment():
     
     # ##### Assignment 4: Back-up depth
     print('Running n-step Q-learning and Monte Carlo')
-    policy = 'egreedy'
-    epsilon = 0.05 # set epsilon back to original value
-    learning_rate = 0.1
-    backup = 'nstep'
-    ns = [1,3,10]
-    Plot = LearningCurvePlot(title = 'Back-up: depth')   
-    Plot.set_ylim(-100, 100) 
-    for n in ns:
-        learning_curve, timesteps = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
-                                              gamma, policy, epsilon, temp, smoothing_window, plot, n, eval_interval)
-        Plot.add_curve(timesteps,learning_curve,label=r'{}-step Q-learning'.format(n))
-    backup = 'mc'
-    learning_curve, timesteps = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
-                                          gamma, policy, epsilon, temp, smoothing_window, plot, n, eval_interval)
-    Plot.add_curve(timesteps,learning_curve,label='Monte Carlo')        
-    Plot.add_hline(optimal_episode_return, label="DP optimum")
+    # policy = 'egreedy'
+    # epsilon = 0.05 # set epsilon back to original value
+    # learning_rate = 0.1
+    # backup = 'nstep'
+    # ns = [1,3,10]
+    # Plot = LearningCurvePlot(title = 'Back-up: depth')   
+    # Plot.set_ylim(-100, 100) 
+    # for n in ns:
+    #     learning_curve, timesteps = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
+    #                                           gamma, policy, epsilon, temp, smoothing_window, plot, n, eval_interval)
+    #     Plot.add_curve(timesteps,learning_curve,label=r'{}-step Q-learning'.format(n))
+    # backup = 'mc'
+    # learning_curve, timesteps = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
+    #                                       gamma, policy, epsilon, temp, smoothing_window, plot, n, eval_interval)
+    # Plot.add_curve(timesteps,learning_curve,label='Monte Carlo')        
+    # Plot.add_hline(optimal_episode_return, label="DP optimum")
 
-    Plot.save('depth-5-36.png')
+    # Plot.save('depth-5-36.png')
 
 if __name__ == '__main__':
     experiment()

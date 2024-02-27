@@ -36,20 +36,21 @@ class NstepQLearningAgent(BaseAgent):
             rewards is a list of rewards observed in the episode, of length T_ep
             done indicates whether the final s in states is was a terminal state '''
             # TO DO: Add own code
-            T_ep = len(actions)
-            # print("timesteps: ", T_ep)
+            T_ep = len(states)
             for t in range(T_ep):
-                G_t = 0
                 m = min(n, T_ep - t)
-                # print("tp",T_ep - t)
-                if done and t + n >= T_ep:
-                    for i in range(T_ep - t):
+                if t + n >= T_ep:
+                    G_t = 0
+                    for i in range(m):
                         G_t += self.gamma ** i * rewards[t+i]
                 else:
-                    # print("m: ", m)
-                    G_t = sum([self.gamma ** i * rewards[t+i] for i in range(m)]) + self.gamma ** (m) * np.max(self.Q_sa[states[t+m] if t+n < T_ep else states[-1],])
+                    G_t = 0
+                    for i in range(m):
+                        G_t += self.gamma ** i * rewards[t+i]
+                    G_t += (self.gamma ** m) * np.max(self.Q_sa[states[t+m]])
                 error = G_t - self.Q_sa[states[t], actions[t]]
                 self.Q_sa[states[t], actions[t]] += self.learning_rate * error
+
 
 
 def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma, 
@@ -68,11 +69,13 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
     # Collect episode
     for t in range(n_timesteps):
         s = env.reset()
+
         states = []
         actions = []
         rewards = []
-        
+
         done = False
+        
         for e in range(max_episode_length):
             a = pi.select_action(s, policy, epsilon, temp)
             s_next, r, done = env.step(a)
@@ -81,9 +84,11 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
             rewards.append(r)
       
             if done:
+                # print("states", states, "actions", rewards)
+                # print("next state", s_next)
                 break
             s = s_next
-
+        
         # Update Q-values
         pi.update(states, actions, rewards, done, n)
         # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
