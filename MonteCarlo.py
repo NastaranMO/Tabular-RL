@@ -34,39 +34,42 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
     pi = MonteCarloAgent(env.n_states, env.n_actions, learning_rate, gamma)
     eval_timesteps = []
     eval_returns = []
-    counter = 0
+
     # TO DO: Write your Monte Carlo RL algorithm here!
-    
-    for t in range(n_timesteps):
+    total_steps = 0
+    while n_timesteps > 0:
         s = env.reset()
-        a = pi.select_action(s, policy, epsilon, temp)
+
         states = []
         actions = []
         rewards = []
         done = False
 
-        for e in range(max_episode_length):
+        for i in range(min(max_episode_length, n_timesteps)):
             a = pi.select_action(s, policy, epsilon, temp)
             s_next, r, done = env.step(a)
+
             states.append(s)
             actions.append(a)
             rewards.append(r)
-            
+
+
             if done:
                 # print('Episode finished after {} timesteps'.format(e+1))
                 break
             s = s_next
+            n_timesteps -= 1
+            total_steps += 1
+
+            if total_steps % eval_interval == 0:
+                mean_return = pi.evaluate(eval_env)
+                eval_returns.append(mean_return)
+                eval_timesteps.append(total_steps)
         # Update Q-values
         pi.update(states, actions, rewards, done)
         # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
 
-        if t % eval_interval == 0:
-            mean_return = pi.evaluate(eval_env)
-            eval_returns.append(mean_return)
-            eval_timesteps.append(t)
 
-        if t == n_timesteps - 1:
-            print()
     if plot:
        env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=5) # Plot the Q-value estimates during Monte Carlo RL execution
 
