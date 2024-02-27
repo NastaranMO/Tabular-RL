@@ -35,32 +35,24 @@ def sarsa(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None, tem
     eval_returns = []
 
     # TO DO: Write your SARSA algorithm here!
-    s = env.reset()
-    a = pi.select_action(s, policy, epsilon, temp)
     for t in range(n_timesteps):
-        # Simulate environment
-        s_next, r, done = env.step(a)
-        # Sample action
-        a_next = pi.select_action(s_next, policy, epsilon, temp)
-        # SARSA update
-        # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
-        pi.update(s,a,r,s_next,a_next,done)
+        s = env.reset()
+        a = pi.select_action(s, policy, epsilon, temp)
+        done = False
+
+        while not done:
+            s_next, r, done = env.step(a)
+            a_next = pi.select_action(s_next, policy, epsilon, temp)
+            # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
+            pi.update(s,a,r,s_next,a_next,done)
+            s = s_next
+            a = a_next
 
         # Evaluate after every eval_interval timesteps
         if t % eval_interval == 0:
             mean_return = pi.evaluate(eval_env)
             eval_returns.append(mean_return)
             eval_timesteps.append(t)
-
-
-        # Update the next state and action
-        if done:
-            # print('Episode finished after {} timesteps'.format(t+1))
-            s = env.reset()
-            a = pi.select_action(s, policy, epsilon, temp)
-        else:
-            s = s_next
-            a = a_next
     
     if plot:
        env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=1) # Plot the Q-value estimates during SARSA execution
@@ -68,7 +60,7 @@ def sarsa(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None, tem
     return np.array(eval_returns), np.array(eval_timesteps) 
 
 def test():
-    n_timesteps = 1000
+    n_timesteps = 10000
     gamma = 1.0
     learning_rate = 0.1
 

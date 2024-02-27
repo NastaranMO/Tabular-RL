@@ -35,28 +35,25 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
     eval_returns = []
     
     # TO DO: Write your Q-learning algorithm here!
-    s = env.reset()
     for t in range(n_timesteps):
-        
-        # Sample action
+        s = env.reset()
         a = agent.select_action(s, policy, epsilon, temp)
-        # Simulate environment
-        s_next, r, done = env.step(a)
-        # Q update
-        # env.render(Q_sa=agent.Q_sa,plot_optimal_policy=True,step_pause=0.1)
-        agent.update(s,a,r,s_next,done)
+        done = False
+
+        while not done:
+            s_next, r, done = env.step(a)
+            a_next = agent.select_action(s_next, policy, epsilon, temp)
+            # Q update
+            # env.render(Q_sa=agent.Q_sa,plot_optimal_policy=True,step_pause=0.1)
+            agent.update(s,a,r,s_next,done)
+            s = s_next
+            a = a_next     
 
         # Evaluate after every eval_interval timesteps
         if t % eval_interval == 0:
             mean_return = agent.evaluate(eval_env)
             eval_returns.append(mean_return)
             eval_timesteps.append(t)
-
-        # Update the next state
-        if done:
-            s = env.reset()
-        else:
-            s = s_next
 
     if plot:
        env.render(Q_sa=agent.Q_sa,plot_optimal_policy=True,step_pause=4) # Plot the Q-value estimates during Q-learning execution
