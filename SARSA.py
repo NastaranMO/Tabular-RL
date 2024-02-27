@@ -35,16 +35,18 @@ def sarsa(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None, tem
     eval_returns = []
 
     # TO DO: Write your SARSA algorithm here!
+    s = env.reset()
+    a = pi.select_action(s, policy, epsilon, temp)
     for t in range(n_timesteps):
-        s = env.reset()
-        a = pi.select_action(s, policy, epsilon, temp)
-        done = False
+        s_next, r, done = env.step(a)
+        a_next = pi.select_action(s_next, policy, epsilon, temp)
+        # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
+        pi.update(s,a,r,s_next,a_next,done)
 
-        while not done:
-            s_next, r, done = env.step(a)
-            a_next = pi.select_action(s_next, policy, epsilon, temp)
-            # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
-            pi.update(s,a,r,s_next,a_next,done)
+        if done:
+            s = env.reset()
+            a = pi.select_action(s, policy, epsilon, temp)
+        else:
             s = s_next
             a = a_next
 

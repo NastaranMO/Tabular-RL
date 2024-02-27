@@ -98,20 +98,20 @@ def experiment():
     Plot.save('exploration-5-36.png')
         
     ###### Assignment 3: Q-learning versus SARSA
-    print('Running Q-learning versus SARSA')
-    policy = 'egreedy'
-    epsilon = 0.1 # set epsilon back to original value 
-    learning_rates = [0.03,0.1,0.3]
-    backups = ['q','sarsa']
-    Plot = LearningCurvePlot(title = 'Back-up: on-policy versus off-policy')    
-    Plot.set_ylim(-100, 100) 
-    for backup in backups:
-        for learning_rate in learning_rates:
-            learning_curve, timesteps = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
-                                              gamma, policy, epsilon, temp, smoothing_window, plot, n, eval_interval)
-            Plot.add_curve(timesteps,learning_curve,label=r'{}, $\alpha$ = {} '.format(backup_labels[backup],learning_rate))
-    Plot.add_hline(optimal_episode_return, label="DP optimum")
-    Plot.save('on_off_policy-5-36.png')
+    # print('Running Q-learning versus SARSA')
+    # policy = 'egreedy'
+    # epsilon = 0.1 # set epsilon back to original value 
+    # learning_rates = [0.03,0.1,0.3]
+    # backups = ['q','sarsa']
+    # Plot = LearningCurvePlot(title = 'Back-up: on-policy versus off-policy')    
+    # Plot.set_ylim(-100, 100) 
+    # for backup in backups:
+    #     for learning_rate in learning_rates:
+    #         learning_curve, timesteps = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
+    #                                           gamma, policy, epsilon, temp, smoothing_window, plot, n, eval_interval)
+    #         Plot.add_curve(timesteps,learning_curve,label=r'{}, $\alpha$ = {} '.format(backup_labels[backup],learning_rate))
+    # Plot.add_hline(optimal_episode_return, label="DP optimum")
+    # Plot.save('on_off_policy-5-36.png')
     
     # ##### Assignment 4: Back-up depth
     print('Running n-step Q-learning and Monte Carlo')
