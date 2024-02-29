@@ -15,10 +15,7 @@ class SarsaAgent(BaseAgent):
     def update(self,s,a,r,s_next,a_next,done):
         # TO DO: Add own code
         # Compute back-up estimate/target G_t
-        if done:
-            G_t = r
-        else:
-            G_t = r + self.gamma * self.Q_sa[s_next,a_next]
+        G_t = r + self.gamma * self.Q_sa[s_next,a_next]
         error = G_t - self.Q_sa[s,a]
         # SARSA update
         self.Q_sa[s,a] += self.learning_rate * error

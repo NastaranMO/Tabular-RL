@@ -75,11 +75,12 @@ def experiment():
     while not done:
         a = QIagent.select_action(s)
         s_next, r, done = env.step(a)
-        # env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=True,step_pause=0.5)
+        env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=True,step_pause=0.5)
         s = s_next
 
     # # TO DO: Compute mean reward per timestep under the optimal policy
     v_star = np.max(QIagent.Q_sa[3, :])
+    print("Optimal value function: ", v_star)
     [mean_number_of_steps] = np.abs((v_star - env.goal_rewards)/env.reward_per_step)       
     
     mean_reward_per_timestep = v_star/mean_number_of_steps

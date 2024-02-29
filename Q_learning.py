@@ -15,11 +15,7 @@ class QLearningAgent(BaseAgent):
     def update(self,s,a,r,s_next,done):
         # TO DO: Add own code
         # Compute back-up estimate/target G_t
-        if (done):
-            G_t = r
-        else:
-            G_t = r + self.gamma * np.max(self.Q_sa[s_next,])
-
+        G_t = r + self.gamma * np.max(self.Q_sa[s_next,])
         error = G_t - self.Q_sa[s,a]
         # Q-learning update
         self.Q_sa[s,a] += self.learning_rate * error
@@ -52,6 +48,7 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
             s = env.reset()
         else:    
             s = s_next
+        
 
     if plot:
        env.render(Q_sa=agent.Q_sa,plot_optimal_policy=True,step_pause=4) # Plot the Q-value estimates during Q-learning execution
@@ -60,7 +57,7 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
     return np.array(eval_returns), np.array(eval_timesteps)   
 
 def test():
-    n_timesteps = 10000
+    n_timesteps = 50000
     eval_interval=100
     gamma = 1.0
     learning_rate = 0.1
@@ -74,7 +71,7 @@ def test():
     plot = True
 
     eval_returns, eval_timesteps = q_learning(n_timesteps, learning_rate, gamma, policy, epsilon, temp, plot, eval_interval)
-    print(eval_returns,eval_timesteps)
+
 
 if __name__ == '__main__':
     test()

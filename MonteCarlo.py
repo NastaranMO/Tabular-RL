@@ -20,9 +20,13 @@ class MonteCarloAgent(BaseAgent):
         # TO DO: Add own code
         T_ep = len(actions)
         G = 0
+        
         for t in reversed(range(T_ep)):
-            G = self.gamma * G + rewards[t]
+            # self.gamma ** i * rewards[t+i]
+            G = self.gamma * rewards[t] + G
+            
             self.Q_sa[states[t], actions[t]] += self.learning_rate * (G - self.Q_sa[states[t], actions[t]])
+        
 
 def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma, 
                    policy='egreedy', epsilon=None, temp=None, plot=True, eval_interval=500):
@@ -77,7 +81,7 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
     return np.array(eval_returns), np.array(eval_timesteps) 
     
 def test():
-    n_timesteps = 1000
+    n_timesteps = 50000
     max_episode_length = 100
     gamma = 1.0
     learning_rate = 0.1
