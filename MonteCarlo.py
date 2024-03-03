@@ -12,19 +12,19 @@ from Agent import BaseAgent
 
 class MonteCarloAgent(BaseAgent):
         
-    def update(self, states, actions, rewards,done):
+    def update(self, states, actions, rewards):
         ''' states is a list of states observed in the episode, of length T_ep + 1 (last state is appended)
         actions is a list of actions observed in the episode, of length T_ep
         rewards is a list of rewards observed in the episode, of length T_ep
         done indicates whether the final s in states is was a terminal state '''
-        # TO DO: Add own code
-        T_ep = len(actions)
-        G = 0
+
+        T_ep = len(actions) # Length of the episode
+        G = 0 # Start reward sum at 0
         
+        # Calculate monte carlo backup at each step
         for t in reversed(range(T_ep)):
-            # self.gamma ** i * rewards[t+i]
             G = self.gamma * rewards[t] + G
-            
+            # Update Q-value table             
             self.Q_sa[states[t], actions[t]] += self.learning_rate * (G - self.Q_sa[states[t], actions[t]])
         
 
@@ -39,40 +39,43 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
     eval_timesteps = []
     eval_returns = []
 
-    # TO DO: Write your Monte Carlo RL algorithm here!
     total_steps = 0
+    
+    # Train the agent
     while n_timesteps > 0:
-        s = env.reset()
+        s = env.reset() # Sample initial state
 
         states = []
         actions = []
         rewards = []
         done = False
-
+        
+        # Collect states, actions, and rewards
         for i in range(min(max_episode_length, n_timesteps)):
-            a = pi.select_action(s, policy, epsilon, temp)
-            s_next, r, done = env.step(a)
+            a = pi.select_action(s, policy, epsilon, temp) # Sample action (e.g, epsilon-greedy)
+            s_next, r, done = env.step(a) # Simulate environment
 
             states.append(s)
             actions.append(a)
             rewards.append(r)
 
-
+            # Episode terminates
             if done:
-                # print('Episode finished after {} timesteps'.format(e+1))
                 break
+
+            # Update the state
             s = s_next
-            n_timesteps -= 1
+            
+            n_timesteps -= 1 # Decrease available timesteps
             total_steps += 1
 
+            # Evaluate the episode
             if total_steps % eval_interval == 0:
                 mean_return = pi.evaluate(eval_env)
                 eval_returns.append(mean_return)
                 eval_timesteps.append(total_steps)
         # Update Q-values
-        pi.update(states, actions, rewards, done)
-        # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
-
+        pi.update(states, actions, rewards)
 
     if plot:
        env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=5) # Plot the Q-value estimates during Monte Carlo RL execution

@@ -21,14 +21,12 @@ class QValueIterationAgent:
         
     def select_action(self,s):
         ''' Returns the greedy best action in state s ''' 
-        # TO DO: your own code
         greedy_action = argmax(self.Q_sa[s])
-        # a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
         return greedy_action
         
     def update(self,s,a,p_sas,r_sas): 
         ''' Function updates Q(s,a) using p_sas and r_sas '''
-        # TO DO: Add own code
+        # Update based on bellman optimality equation
         self.Q_sa[s, a] = np.sum(p_sas * (r_sas + self.gamma * np.max(self.Q_sa, axis=1)))
     
 def Q_value_iteration(env, gamma=1.0, threshold=0.001):
@@ -40,7 +38,6 @@ def Q_value_iteration(env, gamma=1.0, threshold=0.001):
     
     max_error = np.Infinity
     i = 0
-    # TO DO: IMPLEMENT Q-VALUE ITERATION HERE
     while max_error > threshold:    
         # Initialize max_error to 0 for the current iteration
         max_error = 0
@@ -49,21 +46,20 @@ def Q_value_iteration(env, gamma=1.0, threshold=0.001):
         for s in range(env.n_states):
             for a in range(env.n_actions):
                 old_Q_sa = QIagent.Q_sa[s, a]
-                p_sas, r_sas = env.model(s, a)
+                p_sas, r_sas = env.model(s, a) # Simulate environment
                 QIagent.update(s, a, p_sas, r_sas)
                 max_error = max(max_error, abs(QIagent.Q_sa[s, a] - old_Q_sa))
         i += 1
 
         # Plot current Q-value estimates & print max error
-        # first value of step_pause is 0.2
-        env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=True,step_pause=2)
+        env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=True,step_pause=.2)
 
         print("Q-value iteration, iteration {}, max error {}".format(i,max_error))
  
     return QIagent
 
 def experiment():
-    gamma = 1.0
+    gamma = 1
     threshold = 0.001
     env = StochasticWindyGridworld(initialize_model=True)
     # env.render()

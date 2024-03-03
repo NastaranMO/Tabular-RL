@@ -12,8 +12,17 @@ from Agent import BaseAgent
 
 class QLearningAgent(BaseAgent):
         
-    def update(self,s,a,r,s_next,done):
-        # TO DO: Add own code
+    def update(self,s,a,r,s_next):
+        ''' 
+        Update the Q-value(s,a) estimate based on the the maximum value of next state s_next and reward r
+        
+        Parameters:
+        - s: the current state
+        - a: the action taken in the current state
+        - r: the reward observed after taking action a in state s
+        - s_next: the next state observed after taking action a in state s
+
+        '''
         # Compute back-up estimate/target G_t
         G_t = r + self.gamma * np.max(self.Q_sa[s_next,])
         error = G_t - self.Q_sa[s,a]
@@ -30,13 +39,13 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
     eval_timesteps = []
     eval_returns = []
     
-    # TO DO: Write your Q-learning algorithm here!
-    s = env.reset()
+    s = env.reset() # reset the environment
+
+
     for t in range(n_timesteps):
-        a = agent.select_action(s, policy, epsilon, temp)
-        s_next, r, done = env.step(a)
-        # env.render(Q_sa=agent.Q_sa,plot_optimal_policy=True,step_pause=0.1)
-        agent.update(s,a,r,s_next,done)  
+        a = agent.select_action(s, policy, epsilon, temp) # sample action
+        s_next, r, done = env.step(a) # get the knowledge from the environment
+        agent.update(s,a,r,s_next) # update the Q-value estimate
 
         # Evaluate after every eval_interval timesteps
         if t % eval_interval == 0:
@@ -45,13 +54,15 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
             eval_timesteps.append(t)
 
         if done: 
+            # Episode terminates
             s = env.reset()
         else:    
+            # Update the state
             s = s_next
         
 
     if plot:
-       env.render(Q_sa=agent.Q_sa,plot_optimal_policy=True,step_pause=4) # Plot the Q-value estimates during Q-learning execution
+       env.render(Q_sa=agent.Q_sa,plot_optimal_policy=True,step_pause=.2) # Plot the Q-value estimates during Q-learning execution
 
 
     return np.array(eval_returns), np.array(eval_timesteps)   

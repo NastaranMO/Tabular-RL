@@ -9,72 +9,33 @@ By Thomas Moerland
 import numpy as np
 from Environment import StochasticWindyGridworld
 from Agent import BaseAgent
+from Helper import linear_anneal
 
 class NstepQLearningAgent(BaseAgent):
-        # def update(self, states, actions, rewards, done, n):
-        #     ''' states is a list of states observed in the episode, of length T_ep + 1 (last state is appended)
-        #     actions is a list of actions observed in the episode, of length T_ep
-        #     rewards is a list of rewards observed in the episode, of length T_ep
-        #     done indicates whether the final s in states is was a terminal state '''
-        #     # TO DO: Add own code
-        #     T_ep = len(states)
-        #     for t in range(T_ep):
-        #         m = min(n, T_ep - t)
-        #         if t + n >= T_ep:
-        #             G_t = 0
-        #             for i in range(T_ep - t):
-        #                 G_t += self.gamma ** i * rewards[t+i]
-        #         else:
-        #             G_t = 0
-        #             for i in range(m):
-        #                 G_t += self.gamma ** i * rewards[t+i]
-        #             G_t += (self.gamma ** m) * np.max(self.Q_sa[states[t+m]])
-                
-        #         error = G_t - self.Q_sa[states[t], actions[t]]
-        #         self.Q_sa[states[t], actions[t]] += self.learning_rate * error
-
+     
         def update(self, states, actions, rewards, done, n):
-            ''' states is a list of states observed in the episode, of length T_ep + 1 (last state is appended)
-            actions is a list of actions observed in the episode, of length T_ep
-            rewards is a list of rewards observed in the episode, of length T_ep
-            done indicates whether the final s in states is was a terminal state '''
-            # TO DO: Add own code
-            T_ep = len(actions)
-            # print("timesteps: ", T_ep)
+            ''' states: is a list of states observed in the episode, of length T_ep + 1 (last state is appended)
+            actions: is a list of actions observed in the episode, of length T_ep
+            rewards: is a list of rewards observed in the episode, of length T_ep
+            done: indicates whether the final s in states is was a terminal state 
+            '''
+            T_ep = len(actions) # Episode length
             for t in range(T_ep):
-                G_t = 0
-                m = min(n, T_ep - t)
-                # print("tp",T_ep - t)
+                G_t = 0 # Expected return
+                m = min(n, T_ep - t) # Number of rewards left to sum
+
                 if done and t + n >= T_ep:
+                    # Calculate n-step target without bootstraping
                     for i in range(T_ep - t):
                         G_t += self.gamma ** i * rewards[t+i]
                 else:
-                    # print("m: ", m)
+                    # Calculate n-step target with bootstraping
                     G_t = sum([self.gamma ** i * rewards[t+i] for i in range(m)]) + self.gamma ** (m) * np.max(self.Q_sa[states[t+m] if t+n < T_ep else states[-1],])
-                error = G_t - self.Q_sa[states[t], actions[t]]
-                self.Q_sa[states[t], actions[t]] += self.learning_rate * error
-
-        # def update(self, states, actions, rewards, done, n):
-        #     ''' states is a list of states observed in the episode, of length T_ep + 1 (last state is appended)
-        #     actions is a list of actions observed in the episode, of length T_ep
-        #     rewards is a list of rewards observed in the episode, of length T_ep
-        #     done indicates whether the final state in states was a terminal state '''
-        #     T_ep = len(actions)  # Assuming actions and rewards have the same length
-
-        #     # Loop over each step in the episode
-        #     for t in range(T_ep):
-        #         # Calculate the n-step return G_t from state t
-        #         G_t = sum(self.gamma**i * rewards[t + i] for i in range(min(n, T_ep - t)))
                 
-        #         # Add the value of the state at t+n, if it's not the terminal state
-        #         if not (done and t + n >= T_ep):  # Check if state t+n is not terminal
-        #             next_state = states[t + n] if (t + n) < T_ep else states[-1]
-        #             G_t += self.gamma**n * np.max(self.Q_sa[next_state])
 
-        #         # Update Q-value for state t and action taken at t
-        #         current_q = self.Q_sa[states[t], actions[t]]
-        #         error = G_t - current_q
-        #         self.Q_sa[states[t], actions[t]] += self.learning_rate * error
+                error = G_t - self.Q_sa[states[t], actions[t]]
+                # Update Q-value using the learning rate and the error
+                self.Q_sa[states[t], actions[t]] += self.learning_rate * error
 
 
 def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma, 
@@ -87,34 +48,35 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
     pi = NstepQLearningAgent(env.n_states, env.n_actions, learning_rate, gamma)
     eval_timesteps = []
     eval_returns = []
-    total_steps = 0
+    total_steps = 0 # Total number of steps to use for evaluation
 
     
-    # TO DO: Write your n-step Q-learning algorithm here!
-    # Collect episode
+    # Train the agent
     while n_timesteps > 0:
-        s = env.reset()
+        s = env.reset() # Sample initial state
         states = []
         actions = []
         rewards = []
 
-        done = False
-        
+        done = False # whether the episode is done or not
+
+        # Collect states, actions, and rewards
         for i in range(min(max_episode_length, n_timesteps)):
-            a = pi.select_action(s, policy, epsilon, temp)
-            s_next, r, done = env.step(a)
+            a = pi.select_action(s, policy, epsilon, temp) # Sample action (e.g, epsilon-greedy)
+            s_next, r, done = env.step(a) # Simulate environment
             states.append(s)
             actions.append(a)
             rewards.append(r)
 
+            # Episode terminates
             if done:
-                # print("states", states, "actions", rewards)
-                # print("next state", s_next)
                 break
-            s = s_next
-            n_timesteps -= 1
+            
+            s = s_next # Update the state
+            n_timesteps -= 1 # Decrease available timesteps
             total_steps += 1
 
+            # Evaluate the episode
             if total_steps % eval_interval == 0:
                 mean_return = pi.evaluate(eval_env)
                 eval_returns.append(mean_return)
@@ -122,10 +84,9 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
         
         # Update Q-values
         pi.update(states, actions, rewards, done, n)
-        # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
             
     if plot:
-       env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=10) # Plot the Q-value estimates during n-step Q-learning execution
+       env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1) # Plot the Q-value estimates during n-step Q-learning execution
 
     return np.array(eval_returns), np.array(eval_timesteps) 
 
