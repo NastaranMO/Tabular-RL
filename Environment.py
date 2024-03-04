@@ -35,7 +35,7 @@ class StochasticWindyGridworld:
         self.winds = (0,0,0,1,1,1,2,2,1,0)
         self.wind_blows_proportion = 0.9        
 
-        self.reward_per_step = 0 # default reward on every step that does not reach a goal
+        self.reward_per_step = -1 # default reward on every step that does not reach a goal
         self.goal_locations = [[7,3]] # [[6,2]] a vector specifying the goal locations in [[x1,y1],[x2,y2]] format
         # self.goal_locations = [[6,2]]
         # self.goal_locations = [[7,3],[3,2]]

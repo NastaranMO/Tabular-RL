@@ -12,8 +12,18 @@ from Agent import BaseAgent
 
 class SarsaAgent(BaseAgent):
         
-    def update(self,s,a,r,s_next,a_next,done):
-        # TO DO: Add own code
+    def update(self,s,a,r,s_next,a_next):
+        ''' 
+        Update the Q-value(s,a) estimate based on the Q-value of the next state-action pair
+        
+        Parameters:
+        - s: the current state
+        - a: the action taken in the current state
+        - a_next: the action taken in the next state
+        - r: the reward observed after taking action a in state s
+        - s_next: the next state observed after taking action a in state s
+
+        '''
         # Compute back-up estimate/target G_t
         G_t = r + self.gamma * self.Q_sa[s_next,a_next]
         error = G_t - self.Q_sa[s,a]
@@ -31,18 +41,17 @@ def sarsa(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None, tem
     eval_timesteps = []
     eval_returns = []
 
-    # TO DO: Write your SARSA algorithm here!
-    s = env.reset()
-    a = pi.select_action(s, policy, epsilon, temp)
+    s = env.reset() # Sample initial state
+    a = pi.select_action(s, policy, epsilon, temp) # Sample action
     for t in range(n_timesteps):
-        s_next, r, done = env.step(a)
-        a_next = pi.select_action(s_next, policy, epsilon, temp)
-        # env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1)
-        pi.update(s,a,r,s_next,a_next,done)
+        s_next, r, done = env.step(a) # Simulate environment
+        a_next = pi.select_action(s_next, policy, epsilon, temp) # Sample next action
+        pi.update(s,a,r,s_next,a_next) # update the Q-value estimate
 
+        # Episode terminates
         if done:
-            s = env.reset()
-            a = pi.select_action(s, policy, epsilon, temp)
+            s = env.reset() # Sample initial state
+            a = pi.select_action(s, policy, epsilon, temp) 
         else:
             s = s_next
             a = a_next

@@ -54,7 +54,7 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
     # Train the agent
     while n_timesteps > 0:
         s = env.reset() # Sample initial state
-        states = []
+        states = [s]
         actions = []
         rewards = []
 
@@ -64,7 +64,7 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
         for i in range(min(max_episode_length, n_timesteps)):
             a = pi.select_action(s, policy, epsilon, temp) # Sample action (e.g, epsilon-greedy)
             s_next, r, done = env.step(a) # Simulate environment
-            states.append(s)
+            states.append(s_next)
             actions.append(a)
             rewards.append(r)
 

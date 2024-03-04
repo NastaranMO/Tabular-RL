@@ -39,13 +39,13 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
     eval_timesteps = []
     eval_returns = []
 
-    total_steps = 0
+    total_steps = 0 # Total number of steps to use for evaluation
     
     # Train the agent
     while n_timesteps > 0:
         s = env.reset() # Sample initial state
 
-        states = []
+        states = [s]
         actions = []
         rewards = []
         done = False
@@ -55,7 +55,7 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
             a = pi.select_action(s, policy, epsilon, temp) # Sample action (e.g, epsilon-greedy)
             s_next, r, done = env.step(a) # Simulate environment
 
-            states.append(s)
+            states.append(s_next)
             actions.append(a)
             rewards.append(r)
 

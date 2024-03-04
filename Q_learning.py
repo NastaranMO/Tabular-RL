@@ -14,7 +14,7 @@ class QLearningAgent(BaseAgent):
         
     def update(self,s,a,r,s_next):
         ''' 
-        Update the Q-value(s,a) estimate based on the the maximum value of next state s_next and reward r
+        Update the Q-value(s,a) estimate based on the maximum Q-value of next state s_next
         
         Parameters:
         - s: the current state
@@ -39,12 +39,12 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
     eval_timesteps = []
     eval_returns = []
     
-    s = env.reset() # reset the environment
+    s = env.reset() # Sample initial state
 
 
     for t in range(n_timesteps):
-        a = agent.select_action(s, policy, epsilon, temp) # sample action
-        s_next, r, done = env.step(a) # get the knowledge from the environment
+        a = agent.select_action(s, policy, epsilon, temp) # Sample action
+        s_next, r, done = env.step(a) # Simulate environment
         agent.update(s,a,r,s_next) # update the Q-value estimate
 
         # Evaluate after every eval_interval timesteps
